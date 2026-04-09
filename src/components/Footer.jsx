@@ -24,12 +24,12 @@ const Footer = () => {
         <div className="footer-col">
           <h4>Topics</h4>
           <ul>
-            <li><Link to="/information">Conception</Link></li>
-            <li><Link to="/information">Pregnancy</Link></li>
-            <li><Link to="/information">Teen Mothers</Link></li>
-            <li><Link to="/information">Lactation</Link></li>
-            <li><Link to="/information">Child Wellness</Link></li>
-            <li><Link to="/information">Postpartum</Link></li>
+            <li><Link to="/blog">Conception</Link></li>
+            <li><Link to="/blog">Pregnancy</Link></li>
+            <li><Link to="/blog">Teen Mothers</Link></li>
+            <li><Link to="/blog">Lactation</Link></li>
+            <li><Link to="/blog">Child Wellness</Link></li>
+            <li><Link to="/blog">Postpartum</Link></li>
           </ul>
         </div>
         <div className="footer-col footer-contact">

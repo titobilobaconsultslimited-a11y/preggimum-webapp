@@ -16,9 +16,7 @@ const Footer = () => {
           <h4>Quick Links</h4>
           <ul>
             <li><Link to="/doctors">Talk to a Doctor</Link></li>
-            <li><Link to="/information">Pregnancy Info</Link></li>
-            <li><Link to="/tips">Tips & Guides</Link></li>
-            <li><Link to="/blog">Maternal Blog</Link></li>
+            <li><Link to="/blog">Blog & Guides</Link></li>
             <li><Link to="/contact">Subscribe</Link></li>
             <li><a href="https://whatsapp.com/channel/0029VbAHzcwJENy3GXUcId0s" target="_blank" rel="noreferrer">Support Channel</a></li>
           </ul>

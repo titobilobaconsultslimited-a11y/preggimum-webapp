@@ -12,6 +12,7 @@ const Navbar = () => {
         <li><Link to="/doctors">Doctors</Link></li>
         <li><Link to="/information">Information</Link></li>
         <li><Link to="/tips">Tips & Guides</Link></li>
+        <li><Link to="/blog">Blog</Link></li>
         <li><Link to="/contact">Contact</Link></li>
       </ul>
       <a href="https://whatsapp.com/channel/0029VbAHzcwJENy3GXUcId0s" target="_blank" rel="noreferrer" className="nav-cta">

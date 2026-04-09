@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Doctors from './pages/Doctors'
 import Information from './pages/Information'
 import Tips from './pages/Tips'
+import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import useScrollAnimation from './hooks/useScrollAnimation'
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/information" element={<Information />} />
         <Route path="/tips" element={<Tips />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />

@@ -1,78 +1,159 @@
-const Doctors = () => {
-    return (
-      <main>
-        <section id="doctors" style={{ background: 'white', minHeight: 'calc(100vh - 76px)' }}>
-          <div className="section-header">
-            <span className="pill">💬 Direct WhatsApp Access</span>
-            <h2>Talk to Our Specialists</h2>
-            <p>Connect directly with qualified healthcare professionals. One tap and you're in conversation with the right expert for you.</p>
+import React, { useState, useEffect } from 'react';
+import { api } from '../services/api';
+
+export default function Doctors({ onOpenBooking }) {
+  const [clinicians, setClinicians] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadClinicians() {
+      try {
+        const list = await api.getClinicians();
+        setClinicians(list);
+      } catch (e) {
+        console.error('Failed to load clinicians', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadClinicians();
+  }, []);
+
+  const filteredClinicians = clinicians.filter((c) => {
+    if (filter === 'all') return true;
+    if (filter === 'obgyn') return c.specialty.toLowerCase().includes('obstetric') || c.specialty.toLowerCase().includes('gynaec');
+    if (filter === 'midwife') return c.specialty.toLowerCase().includes('midwife') || c.specialty.toLowerCase().includes('lactation');
+    if (filter === 'maternal') return c.specialty.toLowerCase().includes('maternal') || c.specialty.toLowerCase().includes('mental');
+    return true;
+  });
+
+  return (
+    <div className="doctors-page" style={{ paddingTop: '20px' }}>
+      {/* Page Header */}
+      <section style={{ background: 'linear-gradient(180deg, #FDFBF8 0%, #F5EDE6 100%)', padding: '60px 24px', textAlign: 'center' }}>
+        <div className="section-container" style={{ maxWidth: '800px' }}>
+          <span className="badge-pill badge-terracotta" style={{ marginBottom: '12px' }}>
+            Clinical Registry
+          </span>
+          <h1 style={{ fontSize: '3rem', marginBottom: '16px', color: 'var(--color-plum)' }}>
+            Verified Clinicians & Midwives
+          </h1>
+          <p style={{ fontSize: '1.15rem', color: 'var(--text-muted)', lineHeight: '1.7' }}>
+            Meet our multidisciplinary team of licensed Nigerian maternal health specialists. Every practitioner undergoes rigorous license verification with the MDCN or NMCN.
+          </p>
+        </div>
+      </section>
+
+      {/* Specialty Filter */}
+      <section style={{ padding: '40px 24px 80px', background: 'var(--color-ivory)' }}>
+        <div className="section-container">
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '40px' }}>
+            <button
+              type="button"
+              onClick={() => setFilter('all')}
+              className={`badge-pill ${filter === 'all' ? 'badge-terracotta' : 'badge-plum'}`}
+              style={{ padding: '10px 20px', fontSize: '0.9rem', cursor: 'pointer', border: 'none' }}
+            >
+              All Specialists ({clinicians.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('obgyn')}
+              className={`badge-pill ${filter === 'obgyn' ? 'badge-terracotta' : 'badge-plum'}`}
+              style={{ padding: '10px 20px', fontSize: '0.9rem', cursor: 'pointer', border: 'none' }}
+            >
+              Obstetricians & Gynaecologists
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('midwife')}
+              className={`badge-pill ${filter === 'midwife' ? 'badge-terracotta' : 'badge-plum'}`}
+              style={{ padding: '10px 20px', fontSize: '0.9rem', cursor: 'pointer', border: 'none' }}
+            >
+              Certified Midwives & Lactation
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('maternal')}
+              className={`badge-pill ${filter === 'maternal' ? 'badge-terracotta' : 'badge-plum'}`}
+              style={{ padding: '10px 20px', fontSize: '0.9rem', cursor: 'pointer', border: 'none' }}
+            >
+              Maternal Health & Perinatal Wellness
+            </button>
           </div>
-          <div className="doctors-grid">
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#fce4ec' }}>🩺</div>
-              <h3>General Practitioner</h3>
-              <p>General health concerns, medications, and overall wellness during pregnancy and postpartum care.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%20Doctor%2C%20I%20need%20general%20medical%20advice%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
+
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', fontSize: '1.1rem', color: 'var(--text-muted)' }}>
+              Loading clinical directory...
             </div>
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#e3f2fd' }}>🦺</div>
-              <h3>Physiotherapist</h3>
-              <p>Pelvic floor exercises, back pain relief, posture guidance, and physical recovery after childbirth.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%2C%20I%20need%20physiotherapy%20advice%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
+          ) : (
+            <div className="clinicians-grid">
+              {filteredClinicians.map((c) => (
+                <div key={c.id} className="clinician-card">
+                  <div className="clinician-avatar-wrap">
+                    <img src={c.photo_url || '/dr-ayo.png'} alt={c.full_name} />
+                    <span className="badge-pill badge-sage clinician-badge-float">
+                      {c.registration_number || 'MDCN Verified'}
+                    </span>
+                  </div>
+
+                  <div className="clinician-info">
+                    <h3 className="clinician-name">{c.full_name}</h3>
+                    <div className="clinician-specialty">{c.specialty}</div>
+                    <div className="clinician-quals">{c.qualifications}</div>
+                    
+                    <p className="clinician-bio">{c.bio}</p>
+
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', marginBottom: '16px' }}>
+                      🗣 Languages: <strong>{c.languages || 'English'}</strong>
+                    </div>
+
+                    <div className="clinician-footer">
+                      <button
+                        type="button"
+                        onClick={() => onOpenBooking(null, {
+                          id: c.id,
+                          name: c.full_name,
+                          title: c.title,
+                          body: c.registration_number,
+                          exp: 'Verified',
+                          photo: c.photo_url || '/dr-ayo.png'
+                        })}
+                        className="btn-primary"
+                        style={{ width: '100%', padding: '11px', fontSize: '0.9rem' }}
+                      >
+                        Book Consultation
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#f3e5f5' }}>🧠</div>
-              <h3>Counselor</h3>
-              <p>Emotional support, anxiety, depression, postpartum mental health, and relationship guidance.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%2C%20I%20need%20counseling%20support%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
+          )}
+
+          {/* Clinical Verification Guarantee Card */}
+          <div style={{ marginTop: '60px', background: 'white', borderRadius: '20px', padding: '36px', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: '3rem' }}>🛡️</div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '1.3rem', marginBottom: '6px', color: 'var(--color-plum)' }}>
+                Our 100% Clinical Credential Verification Standard
+              </h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: '1.6' }}>
+                Every doctor and nurse-midwife on PreggiMum is verified directly against active registration rolls with the Medical and Dental Council of Nigeria (MDCN) or the Nursing and Midwifery Council of Nigeria (NMCN). We do not accept unverified practitioners.
+              </p>
             </div>
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#e8f5e9' }}>👩‍⚕️</div>
-              <h3>Nurse / Midwife</h3>
-              <p>Labour support, newborn care, breastfeeding techniques, and postdelivery wound management.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%2C%20I%20need%20nursing%20or%20midwife%20support%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
-            </div>
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#fff8e1' }}>🍼</div>
-              <h3>Lactation Consultant</h3>
-              <p>Breastfeeding support, milk supply concerns, latch issues, and weaning guidance for new mums.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%2C%20I%20need%20lactation%20support%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
-            </div>
-  
-            <div className="doctor-card">
-              <div className="doctor-icon" style={{ background: '#e8eaf6' }}>👶</div>
-              <h3>Pediatrician</h3>
-              <p>Child health, vaccinations, developmental milestones, and newborn care for your little one.</p>
-              <a href="https://wa.me/2347035084868?text=Hello%2C%20I%20need%20pediatric%20advice%20from%20PreggiMum" target="_blank" rel="noreferrer" className="wa-btn" aria-label="Chat on WhatsApp">
-                <svg viewBox="0 0 24 24" fill="white" width="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.374 0 0 5.373 0 12c0 2.117.549 4.107 1.508 5.836L.057 23.868a.75.75 0 0 0 .92.921l6.109-1.435A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.935-1.345l-.354-.21-3.658.859.875-3.57-.228-.368A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
-                Chat on WhatsApp
-              </a>
-            </div>
-  
+            <a 
+              href="https://wa.me/2348030000000?text=Hello%20PreggiMum%20Clinical%20Coordinator" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-whatsapp"
+            >
+              Ask Clinical Desk
+            </a>
           </div>
-        </section>
-      </main>
-    );
-  };
-  
-  export default Doctors;
+        </div>
+      </section>
+    </div>
+  );
+}
